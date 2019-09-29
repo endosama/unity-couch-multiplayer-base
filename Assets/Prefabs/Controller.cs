@@ -12,6 +12,7 @@ public class Controller : MonoBehaviour
     {
         inputDevice = InputManager.ActiveDevice;
         m_Rigidbody = GetComponent<Rigidbody>();
+        GameControllerManager.GetInputDevice(this.GetInstanceID());
     }
 
     private void Shoot()

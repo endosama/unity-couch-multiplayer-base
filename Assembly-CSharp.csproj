@@ -175,6 +175,7 @@
     <Compile Include="Assets\InControl\Assets\InControl\Test\TestInputManager.cs" />
     <Compile Include="Assets\Prefabs\Bullet\BulletBehaviour.cs" />
     <Compile Include="Assets\Prefabs\Controller.cs" />
+    <Compile Include="Assets\Prefabs\Controller\GameControllerManager.cs" />
     <Compile Include="Assets\Prefabs\Gun\GunBehaviour.cs" />
     <Compile Include="Assets\Prefabs\Health.cs" />
     <Compile Include="Assets\Prefabs\MultipleTargetCamera.cs" />
