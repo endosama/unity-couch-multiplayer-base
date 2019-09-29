@@ -1,8 +1,9 @@
-# PROJECT
-Handle multiple controller and multiple-target following camera
+# Multiplay local coop
+Handle multiple controller and multiple-target following camera.
+Create with Unity 2019.2.5f1!
 
 # Setup controller with InControl
-create a folder InControl and clone:
+Create a folder InControl and clone:
 ```
 git clone https://github.com/pbhogan/InControl.git
 ```
@@ -19,7 +20,8 @@ http://www.gallantgames.com/pages/incontrol-getting-started
 Unity > Window > Package Manager
 ```
 Enable those packages:
- 1. Lightweight Rendering Pipeline
-
+ 1. Lightweight Rendering Pipeline.
+ 2. Postprocessing
+ 
 If some Material is not shown correctly use:
 Edit > Rendering Pipeline > Lightweight Rendering Pipeline > Upgrade project materials...
