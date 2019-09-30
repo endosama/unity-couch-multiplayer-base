@@ -1,6 +1,6 @@
 # Multiplay local coop
 Handle multiple controller and multiple-target following camera.
-Create with Unity 2019.2.5f1!
+Created with Unity 2019.2.5f1!
 
 # Setup controller with InControl
 Create a folder InControl and clone:
@@ -24,4 +24,6 @@ Enable those packages:
  2. Postprocessing
  
 If some Material is not shown correctly use:
+```
 Edit > Rendering Pipeline > Lightweight Rendering Pipeline > Upgrade project materials...
+```
