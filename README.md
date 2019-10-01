@@ -1,5 +1,6 @@
 # Multiplay local coop
 Handle multiple controller and multiple-target following camera.
+<img src="https://raw.githubusercontent.com/endosama/unity-couch-multiplayer-base/master/preview.png" alt="Preview" width="654" height="387"/>
 
 Works only with game controller!
 Created with Unity 2019.2.5f1!
