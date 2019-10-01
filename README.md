@@ -1,5 +1,7 @@
 # Multiplay local coop
 Handle multiple controller and multiple-target following camera.
+
+Works only with game controller!
 Created with Unity 2019.2.5f1!
 
 # Setup controller with InControl
