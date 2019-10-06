@@ -1,4 +1,4 @@
-# Multiplay local coop
+# Multiplayer local coop
 A simple implementation of a couch multiplayer game using Unity.
 The `GameControllerManager` script handles the mapping between the connected controllers with the Player GameObjects.
 The `ControllerPlugDetection` detects if a new controller has been plugged or if an old has been unplugged.
