@@ -10,9 +10,8 @@ public class Controller : MonoBehaviour
     private Rigidbody m_Rigidbody;
     public void Awake()
     {
-        inputDevice = InputManager.ActiveDevice;
         m_Rigidbody = GetComponent<Rigidbody>();
-        GameControllerManager.GetInputDevice(this.GetInstanceID());
+        inputDevice  = GameControllerManager.GetInputDevice(this);
     }
 
     private void Shoot()
@@ -66,10 +65,21 @@ public class Controller : MonoBehaviour
 
     public void Update()
     {
-        GetInputs();
+        if (inputDevice != null)
+        {
+            GetInputs();
+        }
     }
 
 
-
-
+    public void DisconnectController()
+    {
+        inputDevice = null;
+        transform.Find("Marker").gameObject.SetActive(true);
+    }
+    public void ConnectController(InputDevice input)
+    {
+        inputDevice = input;
+        transform.Find("Marker").gameObject.SetActive(true);
+    }
 }
