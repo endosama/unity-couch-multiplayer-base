@@ -1,5 +1,10 @@
 # Multiplay local coop
-Handle multiple controller and multiple-target following camera.
+A simple implementation of a couch multiplayer game using Unity.
+The `GameControllerManager` script handles the mapping between the connected controllers with the Player GameObjects.
+The `ControllerPlugDetection` detects if a new controller has been plugged or if an old has been unplugged.
+Starting the simulation with connected controllers will automatically generate the players.
+Plugging a new controller will generate a new Player GameObject that will be associated to that controller only if there are no already-spawned players waiting for a controller.
+
 <img src="https://raw.githubusercontent.com/endosama/unity-couch-multiplayer-base/master/preview.png" alt="Preview" width="654" height="387"/>
 
 Works only with game controller!
