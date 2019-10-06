@@ -6,18 +6,11 @@ using UnityEngine;
 
 public class ControllerPlugDetector : MonoBehaviour
 {
-    private List<int> connectedControllers;
-
-    void Start()
-    {
-        connectedControllers = new List<int>();
-    }
-
-    // Update is called once per frame
     void Update()
     {
         var devices = InputManager.Devices.ToList();
-        var deviceHashes = devices.Select(device => device.GetHashCode());
+        var connectedControllers = GameControllerManager.GetConnectedControllerIds().ToList();
+        var deviceHashes = devices.Select(device => device.GetHashCode()).ToArray();
 
         var newDevices = deviceHashes.Except(connectedControllers);
         var removedDevices = connectedControllers.Except(deviceHashes);

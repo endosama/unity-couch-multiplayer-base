@@ -6,12 +6,21 @@ using UnityEngine;
 public class Controller : MonoBehaviour
 {
     public InputDevice inputDevice;
-    public float MovementSpeed = 1;
+    public float movementSpeed = 1;
+    public Color color;
     private Rigidbody m_Rigidbody;
-    public void Awake()
+    private GameObject marker;
+    public void Start()
     {
+        color = new Color(Random.value, Random.value, Random.value) ;
         m_Rigidbody = GetComponent<Rigidbody>();
         inputDevice  = GameControllerManager.GetInputDevice(this);
+        marker = transform.Find("Marker").gameObject;
+        marker.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", color);
+        if (inputDevice != null)
+        {
+            marker.SetActive(true);
+        }
     }
 
     private void Shoot()
@@ -26,7 +35,7 @@ public class Controller : MonoBehaviour
     private void Move(Vector2 movement)
     {
         Debug.Log("Move" + movement);
-        var m = movement * Time.deltaTime * MovementSpeed * 100f;
+        var m = movement * Time.deltaTime * movementSpeed * 100f;
         m_Rigidbody.velocity = new Vector3(m.x, 0 , m.y);
     }
 
@@ -75,11 +84,11 @@ public class Controller : MonoBehaviour
     public void DisconnectController()
     {
         inputDevice = null;
-        transform.Find("Marker").gameObject.SetActive(true);
+        marker.SetActive(false);
     }
     public void ConnectController(InputDevice input)
     {
         inputDevice = input;
-        transform.Find("Marker").gameObject.SetActive(true);
+        marker.SetActive(true);
     }
 }

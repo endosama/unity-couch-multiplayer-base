@@ -20,6 +20,12 @@ public class Engine : MonoBehaviour
         {
             Camera.main.GetComponent<MultipleTargetCamera>().targets.Add(p.transform);
         }
+
+        var connectedInputs = GameControllerManager.GetNotConnectedControllerIds();
+        foreach (var input in connectedInputs)
+        {
+            CreatePlayer();
+        }
     }
 
     // Update is called once per frame

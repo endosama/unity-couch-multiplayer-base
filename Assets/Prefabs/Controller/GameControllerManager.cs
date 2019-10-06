@@ -19,10 +19,29 @@ public static class GameControllerManager
 
     private static void Initialize()
     {
-        _ControllerMapping = new List<PlayerControllerMapping>();
-        _PlayerControllers = new List<Controller>();
-        _inputDevices = InputManager.Devices.ToList();
+
+        if (_ControllerMapping == null)
+        {
+            _ControllerMapping = new List<PlayerControllerMapping>();
+            _PlayerControllers = new List<Controller>();
+            _inputDevices = InputManager.Devices.ToList();
+        }
     }
+
+    public static IEnumerable<int> GetNotConnectedControllerIds()
+    {
+        Initialize();
+        return _inputDevices
+            .Select(input => input.GetHashCode())
+            .Where(input => !IsControllerAlreadyConnectedToPlayer(input));
+
+    }
+
+    public static IEnumerable<int> GetConnectedControllerIds()
+    {
+        return _ControllerMapping.Select(pcm => pcm.ControlledId);
+    }
+
 
     public static bool IsControllerAlreadyConnectedToPlayer(int deviceHash)
     {
@@ -48,11 +67,7 @@ public static class GameControllerManager
     {
         _inputDevices = InputManager.Devices.ToList();
 
-        if (_ControllerMapping == null)
-        {
-            Initialize();
-        }
-
+        Initialize();
         if (!IsControllerAlreadyConnectedToPlayer(deviceHash))
         {
             var connectedPlayerId = _ControllerMapping.Select(cm => cm.PlayerId);
@@ -79,10 +94,8 @@ public static class GameControllerManager
     public static InputDevice GetInputDevice(Controller playerController)
     {
         var playerControllerHash = playerController.GetInstanceID();
-        if (_ControllerMapping == null)
-        {
-            Initialize();
-        }
+        Initialize();
+        
 
         foreach (var inputDevice in _inputDevices)
         {
