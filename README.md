@@ -9,6 +9,7 @@ Plugging a new controller will generate a new Player GameObject that will be ass
 
 Works only with game controller!
 Created with Unity 2019.2.5f1!
+Tested with PS3/PS4 controller!
 
 # Setup controller with InControl
 Create a folder InControl and clone:
