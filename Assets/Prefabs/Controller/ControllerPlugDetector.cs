@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class ControllerPlugDetector : MonoBehaviour
 {
+
     void Update()
     {
         var devices = InputManager.Devices.ToList();

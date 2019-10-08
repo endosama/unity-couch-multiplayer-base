@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Controller : MonoBehaviour
 {
-    public InputDevice inputDevice;
+    public IInputDevice inputDevice;
     public float movementSpeed = 1;
     public Color color;
     private Rigidbody m_Rigidbody;
@@ -52,23 +52,21 @@ public class Controller : MonoBehaviour
 
     private void GetInputs()
     {
-        var shoot = inputDevice.GetControl(InputControlType.RightTrigger);
-        if (shoot.IsPressed)
+        if (inputDevice.IsShooting())
         {
             Shoot();
         }
-        var LpadX = inputDevice.GetControl(InputControlType.LeftStickX);
-        var LpadY = inputDevice.GetControl(InputControlType.LeftStickY);
-        if (LpadX.HasChanged || LpadY.HasChanged)
+
+        var movement = inputDevice.GetMovement();
+        if (movement.magnitude > 0)
         {
-            Move(new Vector2(LpadX.Value,LpadY.Value));
+            Move(movement);
         }
 
-        var RpadX = inputDevice.GetControl(InputControlType.RightStickX);
-        var RpadY = inputDevice.GetControl(InputControlType.RightStickY);
-        if (RpadX.HasChanged || RpadY.HasChanged)
+        var rotation = inputDevice.GetRotation();
+        if (rotation.magnitude > 0)
         {
-            Rotate(new Vector2(RpadX.Value, RpadY.Value));
+            Rotate(rotation);
         }
     }
 
@@ -86,7 +84,7 @@ public class Controller : MonoBehaviour
         inputDevice = null;
         marker.SetActive(false);
     }
-    public void ConnectController(InputDevice input)
+    public void ConnectController(IInputDevice input)
     {
         inputDevice = input;
         marker.SetActive(true);

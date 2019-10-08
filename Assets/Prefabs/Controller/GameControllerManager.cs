@@ -16,6 +16,7 @@ public static class GameControllerManager
     private static List<PlayerControllerMapping> _ControllerMapping;
     private static List<Controller> _PlayerControllers;
     private static List<InputDevice> _inputDevices;
+    private static bool keyboardDetected = false;
 
     private static void Initialize()
     {
@@ -42,7 +43,6 @@ public static class GameControllerManager
         return _ControllerMapping.Select(pcm => pcm.ControlledId);
     }
 
-
     public static bool IsControllerAlreadyConnectedToPlayer(int deviceHash)
     {
         return _ControllerMapping.Any(pc => pc.ControlledId == deviceHash);
@@ -62,7 +62,36 @@ public static class GameControllerManager
 
         }
     }
-    
+
+    public static void KeyboardPluggedEvent()
+    {
+        keyboardDetected = true;
+        Initialize();
+        var notConnectedPlayers = GetNotConnectedPlayers();
+        if (notConnectedPlayers.Any())
+        {
+            var controller = notConnectedPlayers[0];
+            var keyboardController = new KeyboardDevice();
+            controller.ConnectController(keyboardController);
+            var pcm = new PlayerControllerMapping
+            {
+                ControlledId = 0,
+                PlayerId = controller.GetInstanceID()
+            };
+            _ControllerMapping.Add(pcm);
+        }
+        else
+        {
+            Engine.instance.CreatePlayer();
+        }
+    }
+
+    private static List<Controller> GetNotConnectedPlayers()
+    {
+        var connectedPlayerId = _ControllerMapping.Select(cm => cm.PlayerId);
+        return _PlayerControllers.Where(pc => !connectedPlayerId.Contains(pc.GetInstanceID())).ToList();
+    }
+
     public static void ControllerPluggedEvent(int deviceHash)
     {
         _inputDevices = InputManager.Devices.ToList();
@@ -70,13 +99,13 @@ public static class GameControllerManager
         Initialize();
         if (!IsControllerAlreadyConnectedToPlayer(deviceHash))
         {
-            var connectedPlayerId = _ControllerMapping.Select(cm => cm.PlayerId);
-            var notConnectedPlayers = _PlayerControllers.Where(pc => !connectedPlayerId.Contains(pc.GetInstanceID())).ToArray();
+            var notConnectedPlayers = GetNotConnectedPlayers();
             if (notConnectedPlayers.Any())
             {
                 var controller = notConnectedPlayers[0];
                 var inputDevice = _inputDevices.First(i => i.GetHashCode() == deviceHash);
-                controller.ConnectController(inputDevice);
+                var controllerDevice = new ControllerDevice(inputDevice);
+                controller.ConnectController(controllerDevice);
                 var pcm = new PlayerControllerMapping
                 {
                     ControlledId = deviceHash, PlayerId = controller.GetInstanceID()
@@ -91,7 +120,7 @@ public static class GameControllerManager
         }
     }
 
-    public static InputDevice GetInputDevice(Controller playerController)
+    public static IInputDevice GetInputDevice(Controller playerController)
     {
         var playerControllerHash = playerController.GetInstanceID();
         Initialize();
@@ -119,7 +148,9 @@ public static class GameControllerManager
         {
             Debug.Log("Controller assigned to player: "+ playerControllerHash);
             var playerControllerMapping= _ControllerMapping.First(pcm => pcm.PlayerId== playerControllerHash);
-            return _inputDevices.Find(input => input.GetHashCode() == playerControllerMapping.ControlledId);
+            var inputDevice = _inputDevices.Find(input => input.GetHashCode() == playerControllerMapping.ControlledId);
+            var controllerDevice = new ControllerDevice(inputDevice);
+            return controllerDevice;
         }
         else
         {

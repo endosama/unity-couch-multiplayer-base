@@ -177,6 +177,7 @@
     <Compile Include="Assets\Prefabs\Camera\MultipleTargetCamera.cs" />
     <Compile Include="Assets\Prefabs\Camera\OutsideScreenDetection.cs" />
     <Compile Include="Assets\Prefabs\Controller\ControllerPlugDetector.cs" />
+    <Compile Include="Assets\Prefabs\Controller\Device.cs" />
     <Compile Include="Assets\Prefabs\Controller\GameControllerManager.cs" />
     <Compile Include="Assets\Prefabs\Engine\Engine.cs" />
     <Compile Include="Assets\Prefabs\Gun\GunBehaviour.cs" />

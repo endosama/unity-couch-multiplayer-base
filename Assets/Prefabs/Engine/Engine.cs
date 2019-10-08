@@ -24,7 +24,15 @@ public class Engine : MonoBehaviour
         var connectedInputs = GameControllerManager.GetNotConnectedControllerIds();
         foreach (var input in connectedInputs)
         {
-            CreatePlayer();
+            CreatePlayer(); 
+        }
+    }
+
+    public void Update()
+    {
+        if (Input.anyKey)
+        {
+
         }
     }
 
