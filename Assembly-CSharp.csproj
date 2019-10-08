@@ -176,13 +176,15 @@
     <Compile Include="Assets\Prefabs\Bullet\BulletBehaviour.cs" />
     <Compile Include="Assets\Prefabs\Camera\MultipleTargetCamera.cs" />
     <Compile Include="Assets\Prefabs\Camera\OutsideScreenDetection.cs" />
+    <Compile Include="Assets\Prefabs\Controller\ControllerDevice.cs" />
     <Compile Include="Assets\Prefabs\Controller\ControllerPlugDetector.cs" />
-    <Compile Include="Assets\Prefabs\Controller\Device.cs" />
     <Compile Include="Assets\Prefabs\Controller\GameControllerManager.cs" />
+    <Compile Include="Assets\Prefabs\Controller\IInputDevice.cs" />
+    <Compile Include="Assets\Prefabs\Controller\KeyboardDevice.cs" />
     <Compile Include="Assets\Prefabs\Engine\Engine.cs" />
     <Compile Include="Assets\Prefabs\Gun\GunBehaviour.cs" />
-    <Compile Include="Assets\Prefabs\Player\Controller.cs" />
     <Compile Include="Assets\Prefabs\Player\Health.cs" />
+    <Compile Include="Assets\Prefabs\Player\PlayerController.cs" />
     <Compile Include="Assets\Scripts\SimpleCameraController.cs" />
     <None Include="Assets\InControl\Assets\InControl\README\README.txt" />
     <Reference Include="Unity.Timeline.Editor">

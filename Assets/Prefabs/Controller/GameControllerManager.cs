@@ -1,184 +1,157 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Assets.Prefabs.Player;
 using InControl;
 using UnityEngine;
-using System.Linq;
 
-
-public struct PlayerControllerMapping
+namespace Assets.Prefabs.Controller
 {
-    public int ControlledId;
-    public int PlayerId;
-}
-
-public static class GameControllerManager
-{
-    private const int KeyboardHash = 0;
-    private static List<PlayerControllerMapping> _ControllerMapping;
-    private static List<Controller> _PlayerControllers;
-    private static List<InputDevice> _inputDevices;
-    private static bool keyboardDetected = false;
-
-    public static bool IsKeyboardHash(int deviceHash)
+    public struct PlayerControllerMapping
     {
-        return deviceHash == KeyboardHash;
+        public int controlledId;
+        public int playerId;
     }
+
+    public static class GameControllerManager
+    {
+        private const int KeyboardHash = 0;
+        private static List<PlayerControllerMapping> _controllerMapping;
+        private static List<PlayerController> _playerControllers;
+        private static List<InputDevice> _inputDevices;
+        private static bool _keyboardDetected = false;
+
+        public static bool IsKeyboardHash(int deviceHash)
+        {
+            return deviceHash == KeyboardHash;
+        }
     
-    private static void Initialize()
-    {
-
-        if (_ControllerMapping == null)
+        private static void Initialize()
         {
-            _ControllerMapping = new List<PlayerControllerMapping>();
-            _PlayerControllers = new List<Controller>();
+
+            if (_controllerMapping == null)
+            {
+                _controllerMapping = new List<PlayerControllerMapping>();
+                _playerControllers = new List<global::Assets.Prefabs.Player.PlayerController>();
+                _inputDevices = InputManager.Devices.ToList();
+            }
+        }
+
+        public static IEnumerable<int> GetNotConnectedControllerIds()
+        {
+            Initialize();
+            return _inputDevices
+                .Select(input => input.GetHashCode())
+                .Where(input => !IsControllerAlreadyConnectedToPlayer(input));
+
+        }
+
+        public static IEnumerable<int> GetConnectedControllerIds()
+        {
+            return _controllerMapping.Select(pcm => pcm.controlledId);
+        }
+
+        public static bool IsControllerAlreadyConnectedToPlayer(int deviceHash)
+        {
+            return _controllerMapping.Any(pc => pc.controlledId == deviceHash);
+        }
+
+        public static void ControllerUnpluggedEvent(int deviceHash)
+        {
             _inputDevices = InputManager.Devices.ToList();
+            var playerConnectedToControlled = _controllerMapping.Where(pc => pc.controlledId == deviceHash).ToList();
+            if (playerConnectedToControlled.Count > 0)
+            {
+                //Disconnect controller
+                var playerId = playerConnectedToControlled[0].playerId;
+                var playerController = _playerControllers.Find(pc => pc.GetInstanceID() == playerId);
+                playerController.DisconnectController();
+                _controllerMapping.RemoveAll(pc => pc.playerId == playerId);
+
+            }
         }
-    }
 
-    public static IEnumerable<int> GetNotConnectedControllerIds()
-    {
-        Initialize();
-        return _inputDevices
-            .Select(input => input.GetHashCode())
-            .Where(input => !IsControllerAlreadyConnectedToPlayer(input));
-
-    }
-
-    public static IEnumerable<int> GetConnectedControllerIds()
-    {
-        return _ControllerMapping.Select(pcm => pcm.ControlledId);
-    }
-
-    public static bool IsControllerAlreadyConnectedToPlayer(int deviceHash)
-    {
-        return _ControllerMapping.Any(pc => pc.ControlledId == deviceHash);
-    }
-
-    public static void ControllerUnpluggedEvent(int deviceHash)
-    {
-        _inputDevices = InputManager.Devices.ToList();
-        var playerConnectedToControlled = _ControllerMapping.Where(pc => pc.ControlledId == deviceHash).ToList();
-        if (playerConnectedToControlled.Count > 0)
+        private static void ConnectDeviceToPlayer(PlayerController controller, IInputDevice device, int deviceHash)
         {
-            //Disconnect controller
-            var playerId = playerConnectedToControlled[0].PlayerId;
-            var playerController = _PlayerControllers.Find(pc => pc.GetInstanceID() == playerId);
-            playerController.DisconnectController();
-            _ControllerMapping.RemoveAll(pc => pc.PlayerId == playerId);
-
-        }
-    }
-
-    public static void KeyboardPluggedEvent()
-    {
-        keyboardDetected = true;
-        Initialize();
-        var notConnectedPlayers = GetNotConnectedPlayers();
-        if (notConnectedPlayers.Any())
-        {
-            var controller = notConnectedPlayers[0];
-            var keyboardController = new KeyboardDevice();
-            controller.ConnectController(keyboardController);
+            controller.ConnectController(device);
             var pcm = new PlayerControllerMapping
             {
-                ControlledId = KeyboardHash,
-                PlayerId = controller.GetInstanceID()
+                controlledId = deviceHash,
+                playerId = controller.GetInstanceID()
             };
-            _ControllerMapping.Add(pcm);
+            _controllerMapping.Add(pcm);
+            Debug.Log("Controller assigned to player: " + controller.GetInstanceID());
         }
-        else
+
+        private static bool TryConnectionToPlayer(int deviceHash, IInputDevice device)
         {
-            Engine.instance.CreatePlayer();
-        }
-    }
-
-    private static List<Controller> GetNotConnectedPlayers()
-    {
-        var connectedPlayerId = _ControllerMapping.Select(cm => cm.PlayerId);
-        return _PlayerControllers.Where(pc => !connectedPlayerId.Contains(pc.GetInstanceID())).ToList();
-    }
-
-    public static void ControllerPluggedEvent(int deviceHash)
-    {
-        _inputDevices = InputManager.Devices.ToList();
-
-        Initialize();
-        if (!IsControllerAlreadyConnectedToPlayer(deviceHash))
-        {
+            Initialize();
             var notConnectedPlayers = GetNotConnectedPlayers();
             if (notConnectedPlayers.Any())
             {
                 var controller = notConnectedPlayers[0];
-                var inputDevice = _inputDevices.First(i => i.GetHashCode() == deviceHash);
-                var controllerDevice = new ControllerDevice(inputDevice);
-                controller.ConnectController(controllerDevice);
-                var pcm = new PlayerControllerMapping
-                {
-                    ControlledId = deviceHash, PlayerId = controller.GetInstanceID()
-                };
-                _ControllerMapping.Add(pcm);
-
+                ConnectDeviceToPlayer(controller, device, deviceHash);
+                return true;
             }
             else
             {
                 Engine.instance.CreatePlayer();
             }
+            return false;
         }
-    }
-
-    public static IInputDevice GetInputDevice(Controller playerController)
-    {
-        var playerControllerHash = playerController.GetInstanceID();
-        Initialize();
-        
-
-        foreach (var inputDevice in _inputDevices)
+        public static void KeyboardPluggedEvent()
         {
-            if (_ControllerMapping.Any(cm => cm.ControlledId == inputDevice.GetHashCode()))
-            {
-                continue;
-            }
-            _PlayerControllers.Add(playerController);
-            var pcm =  new PlayerControllerMapping()
-            {
-                ControlledId = inputDevice.GetHashCode(),
-                PlayerId = playerControllerHash
-
-            };
-            _ControllerMapping.Add(pcm);
-            break;
+            _keyboardDetected = true;
+            var keyboardController = new KeyboardDevice();
+            TryConnectionToPlayer(KeyboardHash, keyboardController);
         }
 
-        _PlayerControllers.Add(playerController);
-        if (_ControllerMapping.Any(pcm => pcm.PlayerId == playerControllerHash))
+        private static List<global::Assets.Prefabs.Player.PlayerController> GetNotConnectedPlayers()
         {
-            Debug.Log("Controller assigned to player: "+ playerControllerHash);
-            var playerControllerMapping= _ControllerMapping.First(pcm => pcm.PlayerId== playerControllerHash);
-            var inputDevice = _inputDevices.Find(input => input.GetHashCode() == playerControllerMapping.ControlledId);
+            var connectedPlayerId = _controllerMapping.Select(cm => cm.playerId);
+            return _playerControllers.Where(pc => !connectedPlayerId.Contains(pc.GetInstanceID())).ToList();
+        }
+
+        public static void ControllerPluggedEvent(int deviceHash)
+        {
+            _inputDevices = InputManager.Devices.ToList();
+
+            Initialize();
+            if (IsControllerAlreadyConnectedToPlayer(deviceHash)) return;
+            var inputDevice = _inputDevices.First(i => i.GetHashCode() == deviceHash);
             var controllerDevice = new ControllerDevice(inputDevice);
-            return controllerDevice;
+            TryConnectionToPlayer(deviceHash, controllerDevice);
         }
-        else
+
+        public static IInputDevice GetInputDevice(PlayerController playerController)
         {
-            if (keyboardDetected && _ControllerMapping.All(pcm => pcm.ControlledId != 0))
+            Initialize();
+            var playerControllerHash = playerController.GetInstanceID();
+            if (!_playerControllers.Contains(playerController))
+            {
+                _playerControllers.Add(playerController);
+            }
+
+            foreach (var inputDevice in _inputDevices)
+            {
+                if (_controllerMapping.Any(cm => cm.controlledId == inputDevice.GetHashCode()))
+                {
+                    continue;
+                }
+                var controllerDevice = new ControllerDevice(inputDevice);
+                ConnectDeviceToPlayer(playerController, controllerDevice, inputDevice.GetHashCode());
+                return controllerDevice;
+            }
+
+            if (_keyboardDetected && _controllerMapping.All(pcm => pcm.controlledId != 0))
             {
                 var keyboardDevice = new KeyboardDevice();
-                _PlayerControllers.Add(playerController);
-                var pcm = new PlayerControllerMapping()
-                {
-                    ControlledId = KeyboardHash,
-                    PlayerId = playerControllerHash
-
-                };
-                _ControllerMapping.Add(pcm);
+                ConnectDeviceToPlayer(playerController, keyboardDevice, KeyboardHash);
                 return keyboardDevice;
             }
-            else
-            {
-                Debug.Log("No free controller for player: " + playerControllerHash);
-                return null;
-            }
+            
+            Debug.Log("No free controller for player: " + playerControllerHash);
+            return null;
         }
-        
     }
 }

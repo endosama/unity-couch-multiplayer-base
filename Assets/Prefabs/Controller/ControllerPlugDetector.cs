@@ -2,39 +2,42 @@
 using InControl;
 using UnityEngine;
 
-public class ControllerPlugDetector : MonoBehaviour
+namespace Assets.Prefabs.Controller
 {
-    private bool keyboardDetected = false;
-    void Update()
+    public class ControllerPlugDetector : MonoBehaviour
     {
-
-        if (!keyboardDetected)
+        private bool keyboardDetected = false;
+        void Update()
         {
-            if (Input.anyKey)
+
+            if (!keyboardDetected)
             {
-                keyboardDetected = true;
-                GameControllerManager.KeyboardPluggedEvent();
-            }
-        }
-        var devices = InputManager.Devices.ToList();
-        var connectedControllers = GameControllerManager.GetConnectedControllerIds().ToList();
-        var deviceHashes = devices.Select(device => device.GetHashCode()).ToArray();
-
-        var newDevices = deviceHashes.Except(connectedControllers);
-        var removedDevices = connectedControllers.Except(deviceHashes);
-
-        foreach (var deviceHash in newDevices)
-        {
-            GameControllerManager.ControllerPluggedEvent(deviceHash);
-        }
-
-        foreach (var deviceHash in removedDevices)
-        {
-            if (!GameControllerManager.IsKeyboardHash(deviceHash))
-            {
-                if (GameControllerManager.IsControllerAlreadyConnectedToPlayer(deviceHash))
+                if (Input.anyKey)
                 {
-                    GameControllerManager.ControllerUnpluggedEvent(deviceHash);
+                    keyboardDetected = true;
+                    GameControllerManager.KeyboardPluggedEvent();
+                }
+            }
+            var devices = InputManager.Devices.ToList();
+            var connectedControllers = GameControllerManager.GetConnectedControllerIds().ToList();
+            var deviceHashes = devices.Select(device => device.GetHashCode()).ToArray();
+
+            var newDevices = deviceHashes.Except(connectedControllers);
+            var removedDevices = connectedControllers.Except(deviceHashes);
+
+            foreach (var deviceHash in newDevices)
+            {
+                GameControllerManager.ControllerPluggedEvent(deviceHash);
+            }
+
+            foreach (var deviceHash in removedDevices)
+            {
+                if (!GameControllerManager.IsKeyboardHash(deviceHash))
+                {
+                    if (GameControllerManager.IsControllerAlreadyConnectedToPlayer(deviceHash))
+                    {
+                        GameControllerManager.ControllerUnpluggedEvent(deviceHash);
+                    }
                 }
             }
         }

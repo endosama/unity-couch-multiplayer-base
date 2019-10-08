@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Assets.Prefabs.Controller;
 using UnityEngine;
 
 public class Engine : MonoBehaviour
@@ -42,7 +43,7 @@ public class Engine : MonoBehaviour
         var spawnPoints = GameObject.FindGameObjectsWithTag("Respawn");
         var spawn = spawnPoints[spawned++ % spawnPoints.Length];
 
-        var playerInstance = GameObject.Instantiate(player, spawn.transform.position, Quaternion.identity);
+        var playerInstance = Instantiate(player, spawn.transform.position, Quaternion.identity);
         Camera.main.GetComponent<MultipleTargetCamera>().targets.Add(playerInstance.transform);
 
     }

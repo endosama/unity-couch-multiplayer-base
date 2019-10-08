@@ -1,32 +1,33 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
+﻿using Assets.Prefabs.Player;
 using UnityEngine;
 
-public class BulletBehaviour : MonoBehaviour
+namespace Assets.Prefabs.Bullet
 {
-    private Rigidbody m_Rigidbody;
-    public float Speed = 1;
-    // Start is called before the first frame update
-    void Start()
+    public class BulletBehaviour : MonoBehaviour
     {
-        m_Rigidbody = GetComponent<Rigidbody>();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        //m_Rigidbody.MovePosition(transform.forward * Speed * Time.deltaTime);
-    }
-
-    void OnCollisionEnter(Collision collision)
-    {
-        var health = collision.collider.GetComponent<Health>();
-        if (health != null)
+        private Rigidbody m_Rigidbody;
+        public float Speed = 1;
+        // Start is called before the first frame update
+        void Start()
         {
-            health.AddDamage(0.1f);
-            collision.collider.attachedRigidbody.AddForce(m_Rigidbody.velocity.normalized * 5000);
+            m_Rigidbody = GetComponent<Rigidbody>();
         }
-        GameObject.Destroy(this.gameObject);
+
+        // Update is called once per frame
+        void Update()
+        {
+            //m_Rigidbody.MovePosition(transform.forward * Speed * Time.deltaTime);
+        }
+
+        void OnCollisionEnter(Collision collision)
+        {
+            var health = collision.collider.GetComponent<Health>();
+            if (health != null)
+            {
+                health.AddDamage(0.1f);
+                collision.collider.attachedRigidbody.AddForce(m_Rigidbody.velocity.normalized * 5000);
+            }
+            GameObject.Destroy(this.gameObject);
+        }
     }
 }

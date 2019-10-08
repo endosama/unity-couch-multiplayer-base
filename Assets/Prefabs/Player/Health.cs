@@ -1,29 +1,30 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class Health : MonoBehaviour
+namespace Assets.Prefabs.Player
 {
-
-    private float maxHealth = 1;
-
-    public float currentHealth = 1;
-
-    public void AddDamage(float amount)
+    public class Health : MonoBehaviour
     {
-        currentHealth -= amount;
-    }
-    // Start is called before the first frame update
-    void Start()
-    {
+
+        private float maxHealth = 1;
+
+        public float currentHealth = 1;
+
+        public void AddDamage(float amount)
+        {
+            currentHealth -= amount;
+        }
+        // Start is called before the first frame update
+        void Start()
+        {
         
-    }
+        }
 
-    // Update is called once per frame
-    void Update()
-    {
+        // Update is called once per frame
+        void Update()
+        {
         
+        }
+
+
     }
-
-
 }
