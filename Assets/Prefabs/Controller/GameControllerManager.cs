@@ -13,11 +13,17 @@ public struct PlayerControllerMapping
 
 public static class GameControllerManager
 {
+    private const int KeyboardHash = 0;
     private static List<PlayerControllerMapping> _ControllerMapping;
     private static List<Controller> _PlayerControllers;
     private static List<InputDevice> _inputDevices;
     private static bool keyboardDetected = false;
 
+    public static bool IsKeyboardHash(int deviceHash)
+    {
+        return deviceHash == KeyboardHash;
+    }
+    
     private static void Initialize()
     {
 
@@ -75,7 +81,7 @@ public static class GameControllerManager
             controller.ConnectController(keyboardController);
             var pcm = new PlayerControllerMapping
             {
-                ControlledId = 0,
+                ControlledId = KeyboardHash,
                 PlayerId = controller.GetInstanceID()
             };
             _ControllerMapping.Add(pcm);
@@ -154,8 +160,24 @@ public static class GameControllerManager
         }
         else
         {
-            Debug.Log("No free controller for player: " + playerControllerHash);
-            return null;
+            if (keyboardDetected && _ControllerMapping.All(pcm => pcm.ControlledId != 0))
+            {
+                var keyboardDevice = new KeyboardDevice();
+                _PlayerControllers.Add(playerController);
+                var pcm = new PlayerControllerMapping()
+                {
+                    ControlledId = KeyboardHash,
+                    PlayerId = playerControllerHash
+
+                };
+                _ControllerMapping.Add(pcm);
+                return keyboardDevice;
+            }
+            else
+            {
+                Debug.Log("No free controller for player: " + playerControllerHash);
+                return null;
+            }
         }
         
     }

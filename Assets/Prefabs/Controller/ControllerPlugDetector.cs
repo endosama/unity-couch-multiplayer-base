@@ -1,14 +1,21 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using InControl;
 using UnityEngine;
 
 public class ControllerPlugDetector : MonoBehaviour
 {
-
+    private bool keyboardDetected = false;
     void Update()
     {
+
+        if (!keyboardDetected)
+        {
+            if (Input.anyKey)
+            {
+                keyboardDetected = true;
+                GameControllerManager.KeyboardPluggedEvent();
+            }
+        }
         var devices = InputManager.Devices.ToList();
         var connectedControllers = GameControllerManager.GetConnectedControllerIds().ToList();
         var deviceHashes = devices.Select(device => device.GetHashCode()).ToArray();
@@ -23,9 +30,12 @@ public class ControllerPlugDetector : MonoBehaviour
 
         foreach (var deviceHash in removedDevices)
         {
-            if (GameControllerManager.IsControllerAlreadyConnectedToPlayer(deviceHash))
+            if (!GameControllerManager.IsKeyboardHash(deviceHash))
             {
-                GameControllerManager.ControllerUnpluggedEvent(deviceHash);
+                if (GameControllerManager.IsControllerAlreadyConnectedToPlayer(deviceHash))
+                {
+                    GameControllerManager.ControllerUnpluggedEvent(deviceHash);
+                }
             }
         }
     }

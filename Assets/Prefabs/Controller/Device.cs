@@ -88,6 +88,6 @@ public class KeyboardDevice : IInputDevice
 
     public bool IsShooting()
     {
-        return Input.GetButtonUp("Fire 1");
+        return Input.GetButton("Fire1");
     }
 }
