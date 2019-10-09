@@ -7,8 +7,10 @@ Plugging a new controller will generate a new Player GameObject that will be ass
 
 <img src="https://raw.githubusercontent.com/endosama/unity-couch-multiplayer-base/master/preview.png" alt="Preview" width="654" height="387"/>
 
-Works only with game controller!
+Works with game controller and keyboard!
+
 Created with Unity 2019.2.5f1!
+
 Tested with PS3/PS4 controller!
 
 # Setup controller with InControl
