@@ -37,6 +37,7 @@ Unity > Window > Package Manager
 Enable those packages:
  1. Lightweight Rendering Pipeline.
  2. Postprocessing
+ 3. ShaderGraph
  
 If some Material is not shown correctly use:
 ```
